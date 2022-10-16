@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace DownstreamCustomers.Controllers;
 
 [ApiController]
-[Route("customers")]
+[Route("network")]
 public class NetworkController : ControllerBase
 {
     private readonly ILogger<NetworkController> _logger;
@@ -20,12 +20,16 @@ public class NetworkController : ControllerBase
 		_networkService = networkService;
     }
 
-    [HttpPost("/customers")]
-    public ActionResult GetDownstreamCustomers([FromBody]GetDownstreamCustomersRequest request)
+    [HttpPost("customers")]
+    public async Task<ActionResult> GetDownstreamCustomers([FromBody]GetDownstreamCustomersRequest request)
     {
+
+		var numberOfCustomers = _networkService.GetDownstreamCustomers(request.Network, request.SelectedNode);
+
 		var response = new GetDownstreamCustomersResponse {
-			NumberOfCustomers = 10
+			NumberOfCustomers = numberOfCustomers
 		};
+
 		return Ok(response);
     }
 }

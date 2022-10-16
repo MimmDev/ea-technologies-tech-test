@@ -10,40 +10,15 @@ namespace DownstreamCustomers.Test;
 
 public class CustomersControllerTests
 {
-    [Fact]
-    public void ShouldRespondWith200OK()
-    {
-		var mockNetworkService = new Mock<INetworkService>();
-		var mockLogger = new Mock<ILogger<NetworkController>>();
-		var controller = new NetworkController(
-			mockLogger.Object,
-			mockNetworkService.Object
-		);
-		var mockRequestBody = new GetDownstreamCustomersRequest
-		{
-			Network = new Network {
-				Branches = {},
-				Customers = {}
-			},
-			SelectedNode = 2
-		};
+	private GetDownstreamCustomersRequest _requestBody;
+	private Mock<INetworkService> _networkService;
+	private Mock<ILogger<NetworkController>> _networkLogger;
 
-		var result = controller.GetDownstreamCustomers(mockRequestBody);
-
-		Assert.IsType<OkObjectResult>(result);
-    }
-
-	[Fact]
-	public void ShouldReturnCorrectNumberOfCustomers()
+	public CustomersControllerTests()
 	{
-		var mockNetworkService = new Mock<INetworkService>();
-		var mockLogger = new Mock<ILogger<NetworkController>>();
-		var controller = new NetworkController(
-			mockLogger.Object,
-			mockNetworkService.Object
-		);
-		var mockRequestBody = new GetDownstreamCustomersRequest
-		{
+		_networkService = new Mock<INetworkService>();
+		_networkLogger = new Mock<ILogger<NetworkController>>();
+		_requestBody = new GetDownstreamCustomersRequest {
 			Network = new Network {
 				Branches = new List<Branch> {
 					new Branch { StartNode = 10, EndNode = 20 },
@@ -65,11 +40,56 @@ public class CustomersControllerTests
 			},
 			SelectedNode = 50
 		};
+	}
 
-		var result = controller.GetDownstreamCustomers(mockRequestBody);
+    [Fact]
+    public async Task ShouldRespondWith200OK()
+    {
+		var controller = new NetworkController(
+			_networkLogger.Object,
+			_networkService.Object
+		);
+		var mockRequestBody = new GetDownstreamCustomersRequest
+		{
+			Network = new Network {
+				Branches = {},
+				Customers = {}
+			},
+			SelectedNode = 2
+		};
+
+		var result = await controller.GetDownstreamCustomers(mockRequestBody);
+
+		Assert.IsType<OkObjectResult>(result);
+    }
+
+	[Fact]
+	public async Task ShouldReturnCorrectNumberOfCustomers()
+	{
+		var controller = new NetworkController(
+			_networkLogger.Object,
+			_networkService.Object
+		);
+		_networkService.Setup(m => m.GetDownstreamCustomers(_requestBody.Network, _requestBody.SelectedNode))
+			.Returns(10);
+
+		var result = await controller.GetDownstreamCustomers(_requestBody);
 
 		var okResult = Assert.IsType<OkObjectResult>(result);
 		var responseBody = Assert.IsType<GetDownstreamCustomersResponse>(okResult.Value);
 		Assert.Equal(responseBody.NumberOfCustomers, 10);
+	}
+
+	[Fact]
+	public async Task ShouldCallNetworkService()
+	{
+		var controller = new NetworkController(
+			_networkLogger.Object,
+			_networkService.Object
+		);
+
+		await controller.GetDownstreamCustomers(_requestBody);
+
+		_networkService.Verify(mock => mock.GetDownstreamCustomers(It.IsAny<Network>(), It.IsAny<int>()), Times.Once);
 	}
 }

@@ -2,7 +2,7 @@ namespace DownstreamCustomers.Models.Incoming;
 
 public class GetDownstreamCustomersRequest
 {
-	public Network? Network;
+	public Network Network = new Network();
 	public int SelectedNode; 
 }
 
@@ -20,6 +20,6 @@ public class Customer
 
 public class Network
 {
-	public List<Branch>? Branches { get; set; }
-	public List<Customer>? Customers { get; set; }
+	public List<Branch> Branches { get; set; } = new List<Branch>();
+	public List<Customer> Customers { get; set; } = new List<Customer>();
 }
