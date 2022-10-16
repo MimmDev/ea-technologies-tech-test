@@ -1,4 +1,5 @@
 using DownstreamCustomers.Models.Incoming;
+using DownstreamCustomers.Models.Outgoing;
 using DownstreamCustomers.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,6 +23,9 @@ public class NetworkController : ControllerBase
     [HttpPost("/customers")]
     public ActionResult GetDownstreamCustomers([FromBody]GetDownstreamCustomersRequest request)
     {
-		return Ok();
+		var response = new GetDownstreamCustomersResponse {
+			NumberOfCustomers = 10
+		};
+		return Ok(response);
     }
 }
