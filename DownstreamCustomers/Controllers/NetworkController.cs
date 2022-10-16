@@ -23,7 +23,6 @@ public class NetworkController : ControllerBase
     [HttpPost("customers")]
     public async Task<ActionResult> GetDownstreamCustomers([FromBody]GetDownstreamCustomersRequest request)
     {
-
 		var numberOfCustomers = _networkService.GetDownstreamCustomers(request.Network, request.SelectedNode);
 
 		var response = new GetDownstreamCustomersResponse {
