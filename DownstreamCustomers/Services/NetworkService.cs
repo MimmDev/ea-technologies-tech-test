@@ -19,6 +19,12 @@ public class NetworkService : INetworkService
 	public int GetDownstreamCustomers(Network network, int startNode)
 	{
 		var nodeLookup = CreateNodeLookup(network.Branches);
+
+		if (!nodeLookup.ContainsKey(startNode))
+		{
+			throw new BadHttpRequestException("Provided start node does not exist in the network.");
+		}
+
 		var downstreamNodes = GetDownstreamNodes(nodeLookup, startNode);
 
 		var customerLookup = CreateCustomerLookup(network.Customers);
