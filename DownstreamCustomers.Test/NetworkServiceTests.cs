@@ -2,6 +2,7 @@ using Moq;
 using DownstreamCustomers.Services;
 using Microsoft.Extensions.Logging;
 using DownstreamCustomers.Models.Incoming;
+using Microsoft.AspNetCore.Http;
 
 namespace DownstreamCustomers.Test;
 
@@ -42,6 +43,14 @@ public class NetworkServiceTests
 		var result = service.GetDownstreamCustomers(_network, 50);
 
 		Assert.Equal(10, result);
+	}
+
+	[Fact]
+	public void ShouldThrowBadRequestExceptionIfStartNodeInvalid()
+	{
+		var service = new NetworkService(_networkLogger.Object);
+
+		Assert.Throws<BadHttpRequestException>(() => service.GetDownstreamCustomers(_network, 150));
 	}
 
 	[Fact]
